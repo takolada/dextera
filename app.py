@@ -19,17 +19,22 @@ st.set_page_config(
 # -------------------
 from PIL import Image
 
-# Load logo with PIL to avoid path issues
-logo = Image.open("LOGO.png")
+# Load logo
+logo = Image.open("logo.png")
 
-st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
-st.image(logo, width=280)  # centered logo
+# Centered logo + tagline
 st.markdown(
-    "<p style='font-size:18px; color:gray; text-align:center;'>"
-    "An intelligent platform to build your own soft robotic hand</p>",
+    f"""
+    <div style="text-align: center;">
+        <img src="data:image/png;base64,{st.image(logo, output_format="PNG").data}" 
+             alt="DEXTERA AI" style="width:280px; margin-bottom:10px;">
+        <p style="font-size:18px; color:gray; margin-top:0;">
+            An intelligent platform to build your own soft robotic hand
+        </p>
+    </div>
+    """,
     unsafe_allow_html=True
 )
-st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("---")
 
@@ -175,6 +180,7 @@ if st.button("🚀 Create the design!", use_container_width=True):
         "text/csv",
         use_container_width=True
     )
+
 
 
 
