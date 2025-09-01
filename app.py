@@ -15,17 +15,19 @@ st.set_page_config(
 )
 
 # -------------------
-# Header with logo
+# Header with logo (centered & bigger)
 # -------------------
-col1, col2 = st.columns([1,4])
-with col1:
-    st.image("LOGO.png", use_container_width=True)
-with col2:
-    st.markdown(
-        "<h1 style='margin-bottom:0;'>DEXTERA AI</h1>"
-        "<p style='font-size:18px; color:gray;'>An intelligent platform to build your own soft robotic hand</p>",
-        unsafe_allow_html=True
-    )
+st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="logo.png" alt="DEXTERA AI" style="width:280px; margin-bottom: 10px;">
+        <p style="font-size:18px; color:gray; margin-top:0;">
+            An intelligent platform to build your own soft robotic hand
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.markdown("---")
 
@@ -55,20 +57,57 @@ diameters = []
 fingers = ['Index', 'Middle', 'Ring', 'Little']
 
 for finger in [1,2,3,4]:
-    with st.expander(f"➤ {fingers[finger-1]} Finger", expanded=(finger==1)):
+    with st.expander(f"{fingers[finger-1]} Finger", expanded=(finger==1)):
         l = st.number_input(f"Length (mm)", value=50.0, step=0.1, key=f"len_{finger}")
         d = st.number_input(f"Diameter (mm)", value=20.0, step=0.1, key=f"dia_{finger}")
         lengths.append(l)
         diameters.append(d)
 
 # -------------------
-# Input: Target angles
+# Input: Target angles (slider + number input, fully linked)
 # -------------------
 st.subheader("🎯 Desired Range of Motion")
-target_mcp = st.slider("Target MCP (°)", min_value=0.0, max_value=120.0, value=90.0, step=0.5)
-target_pip = st.slider("Target PIP (°)", min_value=0.0, max_value=120.0, value=79.0, step=0.5)
-target_dip = st.slider("Target DIP (°)", min_value=0.0, max_value=120.0, value=96.0, step=0.5)
+
+def linked_slider_number(label, min_val, max_val, default_val, step, key):
+    # initialize in session_state if not exists
+    if key not in st.session_state:
+        st.session_state[key] = default_val
+
+    col1, col2 = st.columns([3,1])
+
+    # slider uses session_state[key]
+    with col1:
+        st.slider(
+            label,
+            min_value=min_val,
+            max_value=max_val,
+            step=step,
+            key=f"{key}_slider",
+            value=st.session_state[key],
+            on_change=lambda: st.session_state.update({key: st.session_state[f"{key}_slider"]})
+        )
+
+    # number input uses session_state[key]
+    with col2:
+        st.number_input(
+            "",
+            min_value=min_val,
+            max_value=max_val,
+            step=step,
+            key=f"{key}_num",
+            value=st.session_state[key],
+            on_change=lambda: st.session_state.update({key: st.session_state[f"{key}_num"]})
+        )
+
+    return st.session_state[key]
+
+# Use linked inputs for each target
+target_mcp = linked_slider_number("Target MCP (°)", 0.0, 120.0, 90.0, 0.5, "mcp")
+target_pip = linked_slider_number("Target PIP (°)", 0.0, 120.0, 79.0, 0.5, "pip")
+target_dip = linked_slider_number("Target DIP (°)", 0.0, 120.0, 96.0, 0.5, "dip")
+
 target_angles = np.array([target_mcp, target_pip, target_dip])
+
 
 # -------------------
 # Objective function
@@ -112,14 +151,14 @@ if st.button("🚀 Create the design!", use_container_width=True):
             "Length (mm)": lengths[finger_idx-1],
             "Diameter (mm)": diameters[finger_idx-1],
             "Gap MCP (mm)": round(best_gaps[0],2),
-            "Gap PIP (mm)": round(best_gaps[1]*2,2),  # doubled for full gap
+            "Gap PIP (mm)": round(best_gaps[1]*2,2),
             "Gap DIP (mm)": round(best_gaps[2]*2,2),
-            "Pred MCP (°)": round(y_pred[0],2),
-            "Pred PIP (°)": round(y_pred[1],2),
-            "Pred DIP (°)": round(y_pred[2],2),
-            "Error MCP (°)": deviation[0],
-            "Error PIP (°)": deviation[1],
-            "Error DIP (°)": deviation[2]
+            "Predicted MCP (°)": round(y_pred[0],2),
+            "Predicted PIP (°)": round(y_pred[1],2),
+            "Predicted DIP (°)": round(y_pred[2],2),
+            "Error Probability MCP (°)": deviation[0],
+            "Error Probability PIP (°)": deviation[1],
+            "Error Probability DIP (°)": deviation[2]
         })
     
     results_df = pd.DataFrame(results)
@@ -134,4 +173,3 @@ if st.button("🚀 Create the design!", use_container_width=True):
         "text/csv",
         use_container_width=True
     )
-
