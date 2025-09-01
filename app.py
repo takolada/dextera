@@ -191,18 +191,8 @@ if st.button("Create the design!", use_container_width=True):
 
     st.image("gap_dimensions.png", caption="Gap Dimensions (distances between rigid segments)", use_container_width=True)
 
-    # Load PDF file
-    with open("Dextera_AI.pdf", "rb") as f:
-        pdf_bytes = f.read()
+    pdf_url = "https://raw.githubusercontent.com/takolada/dextera/main/Dextera_AI.pdf"
     
-    # Encode PDF to base64
-    base64_pdf = base64.b64encode(pdf_bytes).decode("utf-8")
-    
-    # Embed PDF in an iframe
-    pdf_display = f"""
-        <iframe src="data:application/pdf;base64,{base64_pdf}"
-                width="700" height="1000" type="application/pdf"></iframe>
-    """
-    
-    st.markdown(pdf_display, unsafe_allow_html=True)
+    st.markdown(f'<iframe src="{pdf_url}" width="700" height="1000"></iframe>', unsafe_allow_html=True)
+
 
