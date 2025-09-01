@@ -58,7 +58,7 @@ gpr = load_model()
 # -------------------
 # Input: Constraints per finger
 # -------------------
-st.subheader("🖐️ Fill Your Hand Dimensions")
+st.subheader("Fill Your Hand Dimensions")
 
 # Add dimension illustrations
 col_img1, col_img2 = st.columns(2)
@@ -81,7 +81,7 @@ for finger in [1,2,3,4]:
 # -------------------
 # Input: Target angles (slider + number input, fully linked)
 # -------------------
-st.subheader("🎯 Desired Range of Motion")
+st.subheader("Desired Range of Motion")
 
 def linked_slider_number(label, min_val, max_val, default_val, step, key):
     # initialize in session_state if not exists
@@ -142,7 +142,7 @@ def objective(gaps, finger_idx):
 # -------------------
 # Optimization for all fingers
 # -------------------
-if st.button("🚀 Create the design!", use_container_width=True):
+if st.button("Create the design!", use_container_width=True):
     results = []
     for finger_idx in [1,2,3,4]:
         x0 = [2.0, 2.0, 2.0]  # initial guess
@@ -177,7 +177,7 @@ if st.button("🚀 Create the design!", use_container_width=True):
         })
     
     results_df = pd.DataFrame(results)
-    st.subheader("📊 Optimal Gaps and Predicted Angles per Finger")
+    st.subheader("Optimal Gaps and Predicted Angles per Finger")
     st.dataframe(results_df, use_container_width=True)
 
     # Download button
@@ -188,6 +188,7 @@ if st.button("🚀 Create the design!", use_container_width=True):
         "text/csv",
         use_container_width=True
     )
+
 
 
 
