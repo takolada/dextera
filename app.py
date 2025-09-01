@@ -18,16 +18,24 @@ st.set_page_config(
 # Header with logo (centered & bigger)
 # -------------------
 from PIL import Image
+import streamlit as st
+import base64
+from io import BytesIO
 
 # Load logo
-logo = Image.open("LOGO.png")
+logo = Image.open("logo.png")
+
+# Convert to base64 for embedding
+buffer = BytesIO()
+logo.save(buffer, format="PNG")
+b64_logo = base64.b64encode(buffer.getvalue()).decode()
 
 # Centered logo + tagline
 st.markdown(
     f"""
     <div style="text-align: center;">
-        <img src="data:image/png;base64,{st.image(logo, output_format="PNG").data}" 
-             alt="DEXTERA AI" style="width:280px; margin-bottom:10px;">
+        <img src="data:image/png;base64,{b64_logo}" 
+             alt="DEXTERA AI" style="width:320px; margin-bottom:10px;">
         <p style="font-size:18px; color:gray; margin-top:0;">
             An intelligent platform to build your own soft robotic hand
         </p>
@@ -180,6 +188,7 @@ if st.button("🚀 Create the design!", use_container_width=True):
         "text/csv",
         use_container_width=True
     )
+
 
 
 
