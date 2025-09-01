@@ -189,6 +189,19 @@ if st.button("Create the design!", use_container_width=True):
         use_container_width=True
     )
 
+    # Load PDF file
+    with open("Dextera_AI.pdf", "rb") as f:
+        pdf_bytes = f.read()
+    
+    st.download_button("Download PDF", pdf_bytes, "document.pdf")
+    
+    # Display PDF inside app
+    st.components.v1.html(f"""
+        <iframe src="data:application/pdf;base64,{pdf_bytes.encode('base64').decode()}"
+                width="700" height="1000" type="application/pdf"></iframe>
+    """, height=1000)
+
+
 
 
 
