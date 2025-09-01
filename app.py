@@ -18,7 +18,7 @@ lengths = []
 diameters = []
 fingers = ['Index', 'Middle', 'Ring', 'Little']
 for finger in [1,2,3,4]:
-    st.markdown(f"**{fingers[finger]} Finger**")
+    st.markdown(f"**{fingers[finger - 1]} Finger**")
     l = st.number_input(f"Length Finger {finger}", value=50.0, step=0.1)
     d = st.number_input(f"Diameter Finger {finger}", value=20.0, step=0.1)
     lengths.append(l)
@@ -91,4 +91,5 @@ if st.button("Create the design!"):
     results_df = pd.DataFrame(results)
     st.subheader("Optimal Gaps and Predicted Angles per Finger")
     st.dataframe(results_df)
+
 
