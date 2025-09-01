@@ -189,8 +189,10 @@ if st.button("Create the design!", use_container_width=True):
         use_container_width=True
     )
 
+    st.image("gap_dimensions.png", caption="Gap Dimensions (distances between rigid segments)", use_container_width=True)
+
     # Load PDF file
-    with open("document.pdf", "rb") as f:
+    with open("Dextera_AI.pdf", "rb") as f:
         pdf_bytes = f.read()
     
     # Encode PDF to base64
@@ -203,3 +205,4 @@ if st.button("Create the design!", use_container_width=True):
     """
     
     st.markdown(pdf_display, unsafe_allow_html=True)
+
