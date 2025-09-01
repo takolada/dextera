@@ -20,7 +20,7 @@ st.set_page_config(
 st.markdown(
     """
     <div style="text-align: center;">
-        <img src="logo.png" alt="DEXTERA AI" style="width:280px; margin-bottom: 10px;">
+        <img src="LOGO.png" alt="DEXTERA AI" style="width:280px; margin-bottom: 10px;">
         <p style="font-size:18px; color:gray; margin-top:0;">
             An intelligent platform to build your own soft robotic hand
         </p>
@@ -173,3 +173,4 @@ if st.button("🚀 Create the design!", use_container_width=True):
         "text/csv",
         use_container_width=True
     )
+
