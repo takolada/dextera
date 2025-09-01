@@ -23,7 +23,7 @@ import base64
 from io import BytesIO
 
 # Load logo
-logo = Image.open("logo.png")
+logo = Image.open("LOGO.png")
 
 # Convert to base64 for embedding
 buffer = BytesIO()
@@ -188,6 +188,7 @@ if st.button("🚀 Create the design!", use_container_width=True):
         "text/csv",
         use_container_width=True
     )
+
 
 
 
