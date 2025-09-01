@@ -19,7 +19,7 @@ st.set_page_config(
 # -------------------
 col1, col2 = st.columns([1,4])
 with col1:
-    st.image("logo.png", use_container_width=True)
+    st.image("LOGO.png", use_container_width=True)
 with col2:
     st.markdown(
         "<h1 style='margin-bottom:0;'>DEXTERA AI</h1>"
@@ -134,3 +134,4 @@ if st.button("🚀 Create the design!", use_container_width=True):
         "text/csv",
         use_container_width=True
     )
+
