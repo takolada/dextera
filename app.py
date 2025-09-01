@@ -20,7 +20,7 @@ st.set_page_config(
 from PIL import Image
 
 # Load logo
-logo = Image.open("logo.png")
+logo = Image.open("LOGO.png")
 
 # Centered logo + tagline
 st.markdown(
@@ -180,6 +180,7 @@ if st.button("🚀 Create the design!", use_container_width=True):
         "text/csv",
         use_container_width=True
     )
+
 
 
 
