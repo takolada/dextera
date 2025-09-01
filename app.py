@@ -194,16 +194,17 @@ if st.button("Create the design!", use_container_width=True):
     st.image("gap_dimensions.png", caption="Gap Dimensions (distances between rigid segments)", use_container_width=True)
 
     def dextera_tutorial():
-        st.header("Dextera AI — Soft Bionic Hand Manufacturing Tutorial")
+        st.header("Soft Bionic Hand Manufacturing Tutorial")
         st.caption("(redacted version)")
     
         st.markdown(
             """
         **Authors**  
-        Fawaz Amajida • Derrryn Wisnu • Sandro Mihradi • Vani Virdyawan  
+        Fawaz Amajida, Derrryn Wisnu, Sandro Mihradi, Vani Virdyawan  
     
         **Affiliation**  
-        Institut Teknologi Bandung — Laboratory of Biomechanics, Faculty of Mechanical and Aerospace Engineering
+        Laboratory of Biomechanics, Faculty of Mechanical and Aerospace Engineering  
+        Institut Teknologi Bandung
         """
         )
     
@@ -270,3 +271,4 @@ if st.button("Create the design!", use_container_width=True):
                 st.write(body)
 
     dextera_tutorial()
+
