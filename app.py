@@ -20,7 +20,7 @@ st.set_page_config(
 from PIL import Image
 
 # Load logo with PIL to avoid path issues
-logo = Image.open("logo.png")
+logo = Image.open("LOGO.png")
 
 st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
 st.image(logo, width=280)  # centered logo
@@ -175,5 +175,6 @@ if st.button("🚀 Create the design!", use_container_width=True):
         "text/csv",
         use_container_width=True
     )
+
 
 
