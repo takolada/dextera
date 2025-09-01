@@ -1,54 +1,87 @@
+# streamlit_app.py
 import streamlit as st
+import pandas as pd
 import numpy as np
 import joblib
 from scipy.optimize import minimize
 
-# Load pre-trained GPR models
-models = joblib.load("gpr_models.pkl")
+# Load trained GPR pipeline
+gpr = joblib.load("gpr_all_fingers.pkl")
 
-st.title("Soft Bionic Hand - Joint Gap Optimization with GPR + BO")
+st.title("Soft Bionic Hand – Optimize Joint Gaps")
 
-# Desired angles (configurable, default = [90, 79, 96])
-desired_angles = st.text_input("Enter desired [MCP, PIP, DIP] angles", "90,79,96")
-desired_angles = np.array([float(x) for x in desired_angles.split(",")])
+# -------------------
+# User Inputs
+# -------------------
+st.sidebar.header("Constraints")
+finger = st.sidebar.selectbox("Finger", [1,2,3,4])
+length = st.sidebar.number_input("Finger Length", value=50.0)
+diameter = st.sidebar.number_input("Finger Diameter", value=20.0)
 
-# User inputs
-finger = st.selectbox("Finger", [1, 2, 3, 4])
-length = st.number_input("Length", min_value=0.0, value=40.0)
-diameter = st.number_input("Diameter", min_value=0.0, value=15.0)
+st.sidebar.header("Target Joint Angles")
+target_mcp = st.sidebar.number_input("Target MCP", value=90.0)
+target_pip = st.sidebar.number_input("Target PIP", value=79.0)
+target_dip = st.sidebar.number_input("Target DIP", value=96.0)
 
-# Optimization function
+target_angles = np.array([target_mcp, target_pip, target_dip])
+
+# -------------------
+# Objective function
+# -------------------
 def objective(gaps):
-    features = np.array([[finger, length, diameter, *gaps]])
-    preds = []
-    stds = []
-    for i, target in enumerate(['MCP', 'PIP', 'DIP']):
-        mean, std = models[target].predict(features, return_std=True)
-        preds.append(mean[0])
-        stds.append(std[0])
-    preds = np.array(preds)
-    return np.sum((preds - desired_angles)**2)  # squared error
+    df_input = pd.DataFrame([{
+        "Gap_halfMCP": gaps[0],
+        "Gap_halfPIP": gaps[1],
+        "Gap_halfDIP": gaps[2],
+        "Finger": finger,
+        "Length": length,
+        "Diameter": diameter
+    }])
+    
+    y_pred = gpr.predict(df_input)[0]
+    return np.sum((y_pred - target_angles)**2)
 
-# Bayesian Optimization step
+# -------------------
+# Run optimization
+# -------------------
 if st.button("Suggest Optimal Gaps"):
-    x0 = [1.0, 1.0, 1.0]  # initial guess
-    bounds = [(0.1, 10.0), (0.1, 10.0), (0.1, 10.0)]
+    x0 = [2.0, 2.0, 2.0]  # initial guess
+    bounds = [(0.1, 10.0)]*3
+    
     res = minimize(objective, x0=x0, bounds=bounds, method="L-BFGS-B")
+    
+    best_gaps = res.x
+    st.subheader("Optimal Joint Gaps")
+    st.write({
+        "Gap_halfMCP": best_gaps[0],
+        "Gap_halfPIP": best_gaps[1],
+        "Gap_halfDIP": best_gaps[2]
+    })
 
-    if res.success:
-        best_gaps = res.x
-        st.success(f"Suggested Gaps: MCP={best_gaps[0]:.3f}, PIP={best_gaps[1]:.3f}, DIP={best_gaps[2]:.3f}")
-
-        # Show predicted angles and uncertainties
-        features = np.array([[finger, length, diameter, *best_gaps]])
-        preds, stds = [], []
-        for i, target in enumerate(['MCP', 'PIP', 'DIP']):
-            mean, std = models[target].predict(features, return_std=True)
-            preds.append(mean[0])
-            stds.append(std[0])
-
-        st.write("### Predicted Joint Angles with Uncertainty")
-        for i, joint in enumerate(['MCP', 'PIP', 'DIP']):
-            st.write(f"{joint}: {preds[i]:.2f} ± {stds[i]:.2f}")
-    else:
-        st.error("Optimization failed. Try different input values.")
+    # Predicted angles for these gaps
+    df_input = pd.DataFrame([{
+        "Gap_halfMCP": best_gaps[0],
+        "Gap_halfPIP": best_gaps[1],
+        "Gap_halfDIP": best_gaps[2],
+        "Finger": finger,
+        "Length": length,
+        "Diameter": diameter
+    }])
+    y_pred = gpr.predict(df_input)[0]
+    
+    st.subheader("Predicted Joint Angles")
+    st.write({
+        "MCP": y_pred[0],
+        "PIP": y_pred[1],
+        "DIP": y_pred[2]
+    })
+    
+    st.subheader("Target Angles")
+    st.write({
+        "MCP": target_angles[0],
+        "PIP": target_angles[1],
+        "DIP": target_angles[2]
+    })
+    
+    st.subheader("Deviation")
+    st.write(np.round(y_pred - target_angles,2))
