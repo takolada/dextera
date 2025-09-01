@@ -8,16 +8,17 @@ from scipy.optimize import minimize
 # Load trained GPR
 gpr = joblib.load("gpr_all_fingers.pkl")
 
-st.title("Soft Bionic Hand – Optimize Gaps for All Fingers")
+st.title("Dextera AI: an intelligent platform to build your own soft robotic hand")
 
 # -------------------
 # Input: Constraints per finger
 # -------------------
-st.subheader("Finger Constraints")
+st.subheader("Please fill your finger dimensions here")
 lengths = []
 diameters = []
+fingers = ['Index', 'Middle', 'Ring', 'Little']
 for finger in [1,2,3,4]:
-    st.markdown(f"**Finger {finger}**")
+    st.markdown(f"**{fingers[finger]} Finger**")
     l = st.number_input(f"Length Finger {finger}", value=50.0, step=0.1)
     d = st.number_input(f"Diameter Finger {finger}", value=20.0, step=0.1)
     lengths.append(l)
@@ -26,7 +27,7 @@ for finger in [1,2,3,4]:
 # -------------------
 # Input: Target angles
 # -------------------
-st.subheader("Target Joint Angles (Same for all fingers)")
+st.subheader("Set your desired finger range of motion or leave it as it is")
 target_mcp = st.number_input("Target MCP", value=90.0, step=0.1)
 target_pip = st.number_input("Target PIP", value=79.0, step=0.1)
 target_dip = st.number_input("Target DIP", value=96.0, step=0.1)
@@ -52,7 +53,7 @@ def objective(gaps, finger_idx):
 # -------------------
 # Optimization for all fingers
 # -------------------
-if st.button("Suggest Optimal Gaps for All Fingers"):
+if st.button("Create the design!"):
     results = []
     for finger_idx in [1,2,3,4]:
         x0 = [2.0, 2.0, 2.0]  # initial guess
@@ -76,17 +77,18 @@ if st.button("Suggest Optimal Gaps for All Fingers"):
             "Finger": finger_idx,
             "Length": lengths[finger_idx-1],
             "Diameter": diameters[finger_idx-1],
-            "Gap_halfMCP": best_gaps[0],
-            "Gap_halfPIP": best_gaps[1],
-            "Gap_halfDIP": best_gaps[2],
-            "Pred_MCP": y_pred[0],
-            "Pred_PIP": y_pred[1],
-            "Pred_DIP": y_pred[2],
-            "Dev_MCP": deviation[0],
-            "Dev_PIP": deviation[1],
-            "Dev_DIP": deviation[2]
+            "Gap MCP": best_gaps[0],
+            "Gap PIP": best_gaps[1]*2,
+            "Gap DIP": best_gaps[2]*2,
+            "Predicted MCP": y_pred[0],
+            "Predicted PIP": y_pred[1],
+            "Predicted DIP": y_pred[2],
+            "MCP Uncertainty": deviation[0],
+            "PIP Uncertainty": deviation[1],
+            "DIP Uncertainty": deviation[2]
         })
     
     results_df = pd.DataFrame(results)
     st.subheader("Optimal Gaps and Predicted Angles per Finger")
     st.dataframe(results_df)
+
